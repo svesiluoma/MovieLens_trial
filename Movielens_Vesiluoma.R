@@ -51,59 +51,33 @@ edx <- rbind(edx, removed)
 
 rm(dl, ratings, movies, test_index, temp, movielens, removed)
 
+### End of the given code ###
 
-
-# Q1 Rows and columns
+### Studying the data
+# Dimensios of used data sets
+dim(movielens)
 dim(edx)
+dim(validation)
+# Summarixing the training set
 summary(edx)
+str(edx)
+
+# Looking what the rows look alike
 edx %>% head()
-nollat <- edx$rating == 0
-sum(nollat)
-kolmoset <- edx$rating == 3
-sum(kolmoset)
-# Mallivastaus
-edx %>% filter(rating == 0) %>% tally()
-edx %>% filter(rating == 3) %>% tally()
 
-# Q3 how many different movies
-edx %>%
-  count(n_distinct(movieId))
-# Mallivastaus
+# How many different movies
 n_distinct(edx$movieId)
-
-# Q4 how many different users
+# How many different users
 n_distinct(edx$userId)
 
-# Q5 How many ratings per genre
-sum(edx$genres %like% "Drama")
-sum(edx$genres %like% "Comedy")
-sum(edx$genres %like% "Thriller")
-sum(edx$genres %like% "Romance")
-# Mallivastaus
-edx %>% separate_rows(genres, sep = "\\|") %>%
-  group_by(genres) %>%
+# Amounts of ratings per movie
+ratings <- edx %>% group_by(movieId, title) %>%
   summarize(count = n()) %>%
   arrange(desc(count))
+ratings %>% top_n(5)
+hist(ratings$count)
 
-# Q6 Greatest number of ratings
-ratings <- edx %>% select(title) %>% group_by(title) %>% add_tally()
-ratings %>% arrange(desc(n)) %>% head(5)
-# Mallivastaus
-edx %>% group_by(movieId, title) %>%
-  summarize(count = n()) %>%
-  arrange(desc(count))
-
-# Q7 most given ratings
-edx %>% group_by(rating) %>%
-  summarize(count = n()) %>%
-  arrange(desc(count))
-# Mallivastaus
-edx %>% group_by(rating) %>% summarize(count = n()) %>% top_n(5) %>%
-  arrange(desc(count))  
-
-# Q8 mod
-# Laskin edellisest?
-# graafinen mallivastaus
+# Amounts of the ratings per rating level
 edx %>%
   group_by(rating) %>%
   summarize(count = n()) %>%
