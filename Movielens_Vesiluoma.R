@@ -55,12 +55,10 @@ rm(dl, ratings, movies, test_index, temp, movielens, removed)
 
 ### Studying the data
 # Dimensios of used data sets
-dim(movielens)
 dim(edx)
 dim(validation)
 # Summarixing the training set
 summary(edx)
-str(edx)
 
 # Looking what the rows look alike
 edx %>% head()
@@ -81,5 +79,5 @@ hist(ratings$count)
 edx %>%
   group_by(rating) %>%
   summarize(count = n()) %>%
-  ggplot(aes(x = rating, y = count)) +
+  ggplot(aes(rating, count)) +
   geom_line()

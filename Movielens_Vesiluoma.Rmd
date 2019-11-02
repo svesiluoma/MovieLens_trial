@@ -1,7 +1,7 @@
 ---
 title: "Movielens Project"
 author: "Sari Vesiluoma"
-date: "27 10 2019"
+date: "1 11 2019"
 output: html_document
 ---
 
@@ -9,9 +9,79 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r create_d, echo=FALSE}
+library(tidyverse)
+library(caret)
+library(dslabs)
+
+################################
+# Create edx set, validation set
+################################
+
+# Note: this process could take a couple of minutes
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(caret)) install.packages("caret", repos = "http://cran.us.r-project.org")
+if(!require(data.table)) install.packages("data.table", repos = "http://cran.us.r-project.org")
+
+# MovieLens 10M dataset:
+# https://grouplens.org/datasets/movielens/10m/
+# http://files.grouplens.org/datasets/movielens/ml-10m.zip
+
+dl <- tempfile()
+download.file("http://files.grouplens.org/datasets/movielens/ml-10m.zip", dl)
+
+ratings <- fread(text = gsub("::", "\t", readLines(unzip(dl, "ml-10M100K/ratings.dat"))),
+                 col.names = c("userId", "movieId", "rating", "timestamp"))
+
+movies <- str_split_fixed(readLines(unzip(dl, "ml-10M100K/movies.dat")), "\\::", 3)
+colnames(movies) <- c("movieId", "title", "genres")
+movies <- as.data.frame(movies) %>% mutate(movieId = as.numeric(levels(movieId))[movieId],
+                                           title = as.character(title),
+                                           genres = as.character(genres))
+
+movielens <- left_join(ratings, movies, by = "movieId")
+
+# Validation set will be 10% of MovieLens data
+
+set.seed(1, sample.kind="Rounding")
+# if using R 3.5 or earlier, use `set.seed(1)` instead
+test_index <- createDataPartition(y = movielens$rating, times = 1, p = 0.1, list = FALSE)
+edx <- movielens[-test_index,]
+temp <- movielens[test_index,]
+
+# Make sure userId and movieId in validation set are also in edx set
+
+validation <- temp %>% 
+  semi_join(edx, by = "movieId") %>%
+  semi_join(edx, by = "userId")
+
+# Add rows removed from validation set back into edx set
+
+removed <- anti_join(temp, validation)
+edx <- rbind(edx, removed)
+
+rm(dl, ratings, movies, test_index, temp, movielens, removed)
+
+### End of the given code ###
+```
+
 ## Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The purpose in this project is to introduce a movie recommender based on the Movielens 10M data. The data preparation was done based on the code given in the exercice introduction. Ratings and movies were separately excerpted from the Movielens data, then combined. Then 10 % of the resulting movielens data was split to two groups, one data frame called edx for training data and one data frame called validation for validation data including 10 % of the movielens data. Validation data was created so, that it included only rows where movieId and userId were also in the training set (edx data frame). Rows which were excluded from the validation set were added back to the training set. 
+
+The dimensions of the training data (edx) and validation data are
+```{r dims}
+dim(edx)
+dim(validation)
+```
+
+The summary of the training set clearly shows that there are no NA values, so no need for processing those either in this data.
+```{r summary}
+summary(edx)
+```
+
+
 
 ## Analysis
 
