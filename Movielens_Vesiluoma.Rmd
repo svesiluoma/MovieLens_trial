@@ -2,14 +2,14 @@
 title: "Movielens Project"
 author: "Sari Vesiluoma"
 date: "1 11 2019"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r create_d, echo=FALSE}
+```{r create_d, echo=FALSE, results = "hide"}
 library(tidyverse)
 library(caret)
 library(dslabs)
@@ -68,7 +68,7 @@ rm(dl, ratings, movies, test_index, temp, movielens, removed)
 
 ## Introduction
 
-The purpose in this project is to introduce a movie recommender based on the Movielens 10M data. The data preparation was done based on the code given in the exercice introduction. Ratings and movies were separately excerpted from the Movielens data, then combined. Then 10 % of the resulting movielens data was split to two groups, one data frame called edx for training data and one data frame called validation for validation data including 10 % of the movielens data. Validation data was created so, that it included only rows where movieId and userId were also in the training set (edx data frame). Rows which were excluded from the validation set were added back to the training set. 
+The purpose of this project is to introduce a movie recommender based on the Movielens 10M data. The data preparation was done based on the code given in the exercice introduction. Ratings and movies were separately excerpted from the Movielens data, then combined. Then movielens data was split into two groups, one data frame called edx for training data and one data frame called validation for validation data including 10 % of the movielens data. Validation data was created so, that it included only rows where movieId and userId were also existing in the training set (edx). Rows which were excluded from the validation set were added back to the training set. 
 
 The dimensions of the training data (edx) and validation data are
 ```{r dims}
@@ -76,7 +76,7 @@ dim(edx)
 dim(validation)
 ```
 
-The summary of the training set clearly shows that there are no NA values, so no need for processing those either in this data.
+The summary of the training set clearly shows that there are no NA values, so no need for pre-processing those in this data.
 ```{r summary}
 summary(edx)
 ```
@@ -87,17 +87,16 @@ edx %>% head()
 ```
 
 The amount of unique movies and users in the training data are
-```{r amounts, echo=FALSE}
+```{r amounts}
 n_distinct(edx$movieId)
 n_distinct(edx$userId)
 ```
 
 When using this data, it is important to recognize that the amount of ratings per movie vary hugely between the movies as shown in the histogram below.
-```{r ratings_movie}
+```{r ratings_movie, echo=FALSE}
 ratings <- edx %>% group_by(movieId, title) %>%
   summarize(count = n()) %>%
   arrange(desc(count))
-ratings %>% top_n(5)
 hist(ratings$count)
 ```
 
@@ -113,24 +112,10 @@ edx %>%
 
 ## Analysis
 
-When you click the **Knit** button a document will be generated 
+xxx
 
 ## Results
 
 ## Conclusion
 
-that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+xxx
