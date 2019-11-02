@@ -72,7 +72,6 @@ n_distinct(edx$userId)
 ratings <- edx %>% group_by(movieId, title) %>%
   summarize(count = n()) %>%
   arrange(desc(count))
-ratings %>% top_n(5)
 hist(ratings$count)
 
 # Amounts of the ratings per rating level

@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r create_d, echo=FALSE, results = "hide"}
+```{r create_d, include=FALSE}
 library(tidyverse)
 library(caret)
 library(dslabs)
@@ -76,11 +76,6 @@ dim(edx)
 dim(validation)
 ```
 
-The summary of the training set clearly shows that there are no NA values, so no need for pre-processing those in this data.
-```{r summary}
-summary(edx)
-```
-
 The rows in the data look like this
 ```{r head}
 edx %>% head()
@@ -101,7 +96,7 @@ hist(ratings$count)
 ```
 
 Also, when looking the amount of ratings people have used, it is clear that they have used integers much more than the half (.5) figures as can bee seen from the line chart below. 
-```{r ratings_rates}
+```{r ratings_rates, echo=FALSE}
 edx %>%
   group_by(rating) %>%
   summarize(count = n()) %>%
@@ -112,7 +107,11 @@ edx %>%
 
 ## Analysis
 
-xxx
+The summary of the training set clearly shows that there are no NA values, so no need for pre-processing those in this data. So, this data can be used as is.
+
+```{r summary}
+summary(edx)
+```
 
 ## Results
 
