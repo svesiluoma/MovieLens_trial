@@ -81,6 +81,34 @@ The summary of the training set clearly shows that there are no NA values, so no
 summary(edx)
 ```
 
+The rows in the data look like this
+```{r head}
+edx %>% head()
+```
+
+The amount of unique movies and users in the training data are
+```{r amounts, echo=FALSE}
+n_distinct(edx$movieId)
+n_distinct(edx$userId)
+```
+
+When using this data, it is important to recognize that the amount of ratings per movie vary hugely between the movies as shown in the histogram below.
+```{r ratings_movie}
+ratings <- edx %>% group_by(movieId, title) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count))
+ratings %>% top_n(5)
+hist(ratings$count)
+```
+
+Also, when looking the amount of ratings people have used, it is clear that they have used integers much more than the half (.5) figures as can bee seen from the line chart below. 
+```{r ratings_rates}
+edx %>%
+  group_by(rating) %>%
+  summarize(count = n()) %>%
+  ggplot(aes(rating, count)) +
+  geom_line()
+```
 
 
 ## Analysis
