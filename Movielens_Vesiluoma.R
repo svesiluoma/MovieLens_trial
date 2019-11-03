@@ -80,3 +80,17 @@ edx %>%
   summarize(count = n()) %>%
   ggplot(aes(rating, count)) +
   geom_line()
+
+# RMSE score used for comparing the algorithms
+RMSE <- function(true_ratings, predicted_ratings){
+  sqrt(mean((true_ratings-predicted_ratings)^2))
+}
+
+# Baseline value for RMSE based on the average
+mu_hat <- mean(edx$rating)
+mu_hat
+naive_rmse <- RMSE(validation$rating, mu_hat)
+naive_rmse
+# Adding the values to a rmse_results data frame to be able to show these as a summary later
+rmse_results <- data.frame(method = "Based on average", RMSE=naive_rmse)
+rmse_results

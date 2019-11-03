@@ -77,7 +77,16 @@ dim(edx)
 dim(validation)
 ```
 
-The rows in the data look like this
+
+## Analysis
+
+The summary of the training set clearly shows that there are no NA values, so no need for pre-processing those in this data. So, this data can be used as is. 
+
+```{r summary}
+summary(edx)
+```
+
+Rows in the data look like this
 
 ```{r head}
 edx %>% head()
@@ -99,7 +108,7 @@ ratings <- edx %>% group_by(movieId, title) %>%
 hist(ratings$count)
 ```
 
-Also, when looking the amount of ratings people have used, it is clear that they have used integers much more than the half (.5) figures as can bee seen from the line chart below. 
+Also, when looking the way people have used rating levels, it is clear that they have used integer ratings much more than the half (.5) ratings as can bee seen from the line chart below. 
 
 ```{r ratings_rates, echo=FALSE}
 edx %>%
@@ -109,13 +118,21 @@ edx %>%
   geom_line()
 ```
 
+The idea here is to use several different machine learning algorithms to test which one(s) might give the best result in recommending. The value of the result will be analyzed based on RMSE score of the algorithm. 
 
-## Analysis
+```{r rmse, results="hidden"}
+RMSE <- function(true_ratings, predicted_ratings){
+  sqrt(mean((true_ratings-predicted_ratings)^2))
+}
+```
 
-The summary of the training set clearly shows that there are no NA values, so no need for pre-processing those in this data. So, this data can be used as is.
+To start with we will need a some kind of a baseline compared to which to try to improve the RMSE. For that purpose we will use the mean value of the ratings in the training set. The resulting RMSE value is
 
-```{r summary}
-summary(edx)
+```{r average, echo=FALSE}
+mu_hat <- mean(edx$rating)
+naive_rmse <- RMSE(validation$rating, mu_hat)
+naive_rmse
+rmse_results <- data.frame(method = "Based on average", RMSE=naive_rmse)
 ```
 
 
