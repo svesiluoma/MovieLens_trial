@@ -71,23 +71,27 @@ rm(dl, ratings, movies, test_index, temp, movielens, removed)
 The purpose of this project is to introduce a movie recommender based on the Movielens 10M data. The data preparation was done based on the code given in the exercice introduction. Ratings and movies were separately excerpted from the Movielens data, then combined. Then movielens data was split into two groups, one data frame called edx for training data and one data frame called validation for validation data including 10 % of the movielens data. Validation data was created so, that it included only rows where movieId and userId were also existing in the training set (edx). Rows which were excluded from the validation set were added back to the training set. 
 
 The dimensions of the training data (edx) and validation data are
+
 ```{r dims}
 dim(edx)
 dim(validation)
 ```
 
 The rows in the data look like this
+
 ```{r head}
 edx %>% head()
 ```
 
 The amount of unique movies and users in the training data are
+
 ```{r amounts}
 n_distinct(edx$movieId)
 n_distinct(edx$userId)
 ```
 
 When using this data, it is important to recognize that the amount of ratings per movie vary hugely between the movies as shown in the histogram below.
+
 ```{r ratings_movie, echo=FALSE}
 ratings <- edx %>% group_by(movieId, title) %>%
   summarize(count = n()) %>%
@@ -96,6 +100,7 @@ hist(ratings$count)
 ```
 
 Also, when looking the amount of ratings people have used, it is clear that they have used integers much more than the half (.5) figures as can bee seen from the line chart below. 
+
 ```{r ratings_rates, echo=FALSE}
 edx %>%
   group_by(rating) %>%
@@ -113,7 +118,9 @@ The summary of the training set clearly shows that there are no NA values, so no
 summary(edx)
 ```
 
+
 ## Results
+
 
 ## Conclusion
 
