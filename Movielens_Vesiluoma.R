@@ -74,6 +74,12 @@ ratings <- edx %>% group_by(movieId, title) %>%
   arrange(desc(count))
 hist(ratings$count)
 
+# Amounts of ratings per user
+ratings_per_user <- edx %>% group_by(userId) %>%
+  summarize(count_user = n()) %>%
+  arrange(desc(count_user))
+hist(ratings_per_user$count_user)
+
 # Amounts of the ratings per rating level
 edx %>%
   group_by(rating) %>%
@@ -93,4 +99,40 @@ naive_rmse <- RMSE(validation$rating, mu_hat)
 naive_rmse
 # Adding the values to a rmse_results data frame to be able to show these as a summary later
 rmse_results <- data.frame(method = "Based on average", RMSE=naive_rmse)
+rmse_results
+
+# Differences in ratings per movie
+movie_avgs <- edx %>%
+  group_by(movieId) %>%
+  summarize(b_i = mean(rating - mu_hat))
+# Taking into consideration that some movies are rated higher than the others
+predicted_ratings <- mu_hat + validation %>%
+  left_join(movie_avgs, by='movieId') %>%
+  pull(b_i)
+model_1_rmse <- RMSE(predicted_ratings, validation$rating)
+model_1_rmse
+# Adding the resulting value to the list
+rmse_results <- bind_rows(rmse_results, 
+                          data_frame(method="Movie effect model", 
+                                     RMSE = model_1_rmse))
+
+# Differences in ratings per user and noticing both movie effect and user effect
+user_avgs <- edx %>%
+  left_join(movie_avgs, by='movieId') %>%
+  group_by(userId) %>%
+  summarize(b_u = mean(rating - mu_hat - b_i))
+# Taking into consideration both movie and user effect
+predicted_ratings <- validation %>%
+  left_join(movie_avgs, by='movieId') %>%
+  left_join(user_avgs, by='userId') %>%
+  mutate(pred = mu_hat + b_i + b_u) %>%
+  pull(pred)
+model_2_rmse <- RMSE(predicted_ratings, validation$rating)
+model_2_rmse
+# Adding the resulting value to the list
+rmse_results <- bind_rows(rmse_results, 
+                          data_frame(method="Movie + user effect model", 
+                                     RMSE = model_2_rmse))
+
+# Results as a table
 rmse_results
