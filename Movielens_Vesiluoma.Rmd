@@ -129,7 +129,7 @@ edx %>%
   geom_line()
 ```
 
-The idea here is to use several different machine learning algorithms to test which one(s) might give the best result in recommending. The value of the result will be analyzed based on RMSE score of the algorithm. 
+The idea here is to use some different machine learning models to test which one(s) might give the best result in recommending. The value of the result will be analyzed based on RMSE score of the algorithm. 
 
 ```{r rmse, results="hidden"}
 RMSE <- function(true_ratings, predicted_ratings){
@@ -196,13 +196,13 @@ The results were achived following the model that had been introduced in the lec
 rmse_results
 ```
 
-The comparing value was created based on using the rating average only. The next value was created based on noticing that different movies are rated differently. That clearly improved the result. Finally, also it was noticed that different users rate differently, so including also the user effect in addition resulted RMSE being 'model_2_rmse'.
+The comparing value was created based on using the rating average only. The next value was created based on noticing that different movies are rated differently. That clearly improved the result. Finally, also it was noticed that different users rate differently, so including also the user effect resulted RMSE being `model_2_rmse`.
 
 
 ## Conclusion
 
 When recommending movies, it is clear, also based on this project, that in addition to an average as the basis for a recommendation, we will need to notice also that different movies are rated differently (movie effect) and that different users give rates differently (user effect). Includin both of these, the movie effect and the user effect increases the "goodness" of the recommendation remarkably. 
 
-The main limitation in this project was that only a small amount of data (10 M Movielens data) was used not to get the home laptops stuck. So, to be able to create even more convincing recommendations, more training data would be beneficial. In addition, some other algorithms could also be utilized in addition to this simple approach used here. 
+The main limitation in this project was that only a small amount of data (10 M Movielens data) was used not to get the home laptops stuck. So, to be able to create even more convincing recommendations, more training data would be beneficial. In addition, some other algorithms could also be utilized. 
 
 As such, this was an interesting project and made me understand much better what we were doing during the lectures and why to do these this way. 
