@@ -77,6 +77,8 @@ dim(edx)
 dim(validation)
 ```
 
+Like will be shown in the Analysis chapter, the data did not need any further cleanig, so it was possible to start creating the recommendation model, a.k.a. starting to find a solution resulting reasonably small RMSE. This was done in three steps. First to assume a model where the recommendation is the mean over all ratings in the training set, secondly to notice also that different movies get different level of ratings, and finally, in addition, noticing that different users give different level of ratings for different movies. 
+
 
 ## Analysis
 
@@ -108,6 +110,15 @@ ratings <- edx %>% group_by(movieId, title) %>%
 hist(ratings$count)
 ```
 
+Similarly, the amount of ratings per user vary really much as can be seen the next histogram.
+
+```{r ratings_user, echo=FALSE}
+ratings_per_user <- edx %>% group_by(userId) %>%
+  summarize(count_user = n()) %>%
+  arrange(desc(count_user))
+hist(ratings_per_user$count_user)
+```
+
 Also, when looking the way people have used rating levels, it is clear that they have used integer ratings much more than the half (.5) ratings as can bee seen from the line chart below. 
 
 ```{r ratings_rates, echo=FALSE}
@@ -135,10 +146,63 @@ naive_rmse
 rmse_results <- data.frame(method = "Based on average", RMSE=naive_rmse)
 ```
 
+The first model to be used is to notice that some movies get higher rates than others. So, in addition to using the average, we'll notice movie specific deviation from the mean. When noticing this the value of RMSE is less than when using only the average value and it is:
+
+```{r movie_effect, echo=FALSE}
+# Differences in ratings per movie
+movie_avgs <- edx %>%
+  group_by(movieId) %>%
+  summarize(b_i = mean(rating - mu_hat))
+# Taking into consideration that some movies are rated higher than the others
+predicted_ratings <- mu_hat + validation %>%
+  left_join(movie_avgs, by='movieId') %>%
+  pull(b_i)
+model_1_rmse <- RMSE(predicted_ratings, validation$rating)
+model_1_rmse
+# Adding the resulting value to the list
+rmse_results <- bind_rows(rmse_results, 
+                          data_frame(method="Movie effect model", 
+                                     RMSE = model_1_rmse))
+```
+
+Like some movies get higher rates than others, similarly different users rate very differently. Next, in addition to using the average and movie effect, we will also use the user effect. Like you see, the resulting RMSE improves to
+
+```{r movie_user_effect, echo=FALSE}
+
+# Differences in ratings per user and noticing both movie effect and user effect
+user_avgs <- edx %>%
+  left_join(movie_avgs, by='movieId') %>%
+  group_by(userId) %>%
+  summarize(b_u = mean(rating - mu_hat - b_i))
+# Taking into consideration both movie and user effect
+predicted_ratings <- validation %>%
+  left_join(movie_avgs, by='movieId') %>%
+  left_join(user_avgs, by='userId') %>%
+  mutate(pred = mu_hat + b_i + b_u) %>%
+  pull(pred)
+model_2_rmse <- RMSE(predicted_ratings, validation$rating)
+model_2_rmse
+# Adding the resulting value to the list
+rmse_results <- bind_rows(rmse_results, 
+                          data_frame(method="Movie + user effect model", 
+                                     RMSE = model_2_rmse))
+```
 
 ## Results
+
+The results were achived following the model that had been introduced in the lectures. The results based on the three models used are:
+
+```{r results}
+rmse_results
+```
+
+The comparing value was created based on using the rating average only. The next value was created based on noticing that different movies are rated differently. That clearly improved the result. Finally, also it was noticed that different users rate differently, so including also the user effect in addition resulted RMSE being 'model_2_rmse'.
 
 
 ## Conclusion
 
-xxx
+When recommending movies, it is clear, also based on this project, that in addition to an average as the basis for a recommendation, we will need to notice also that different movies are rated differently (movie effect) and that different users give rates differently (user effect). Includin both of these, the movie effect and the user effect increases the "goodness" of the recommendation remarkably. 
+
+The main limitation in this project was that only a small amount of data (10 M Movielens data) was used not to get the home laptops stuck. So, to be able to create even more convincing recommendations, more training data would be beneficial. In addition, some other algorithms could also be utilized in addition to this simple approach used here. 
+
+As such, this was an interesting project and made me understand much better what we were doing during the lectures and why to do these this way. 
